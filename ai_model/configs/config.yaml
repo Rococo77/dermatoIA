@@ -1,0 +1,58 @@
+# DermatoIA - Configuration d'entrainement
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  splits_dir: "data/splits"
+  image_size: 224
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+model:
+  backbone: "efficientnet_b4"
+  pretrained: true
+  feature_dim: 1792
+  type_embedding_dim: 64
+  type_hidden_dim: 512
+  severity_hidden_dim: 256
+  dropout: 0.3
+  num_severity_levels: 4
+
+training:
+  phase1:
+    epochs: 10
+    lr: 0.001
+    freeze_backbone: true
+  phase2:
+    epochs: 30
+    lr: 0.0001
+    freeze_backbone: false
+  batch_size: 32
+  num_workers: 4
+  optimizer: "adamw"
+  weight_decay: 0.01
+  scheduler: "cosine_annealing"
+  early_stopping_patience: 7
+  loss_alpha: 1.0
+  loss_beta: 1.0
+
+export:
+  format: "torchscript"
+  output_dir: "models/exported"
+
+lesion_types:
+  - melanoma
+  - eczema
+  - psoriasis
+  - acne
+  - dermatitis
+  - keratosis
+  - nevus
+  - other
+
+severity_levels:
+  - low
+  - medium
+  - high
+  - critical
