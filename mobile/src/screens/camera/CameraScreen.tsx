@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-na
 import { useNavigation } from '@react-navigation/native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import { Feather } from '@expo/vector-icons';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function CameraScreen() {
   const navigation = useNavigation<any>();
@@ -34,6 +36,7 @@ export default function CameraScreen() {
   if (!permission?.granted) {
     return (
       <View style={styles.centered}>
+        <Feather name="camera-off" size={48} color={colors.text.tertiary} />
         <Text style={styles.permissionText}>
           L'acces a la camera est necessaire pour analyser votre peau.
         </Text>
@@ -54,8 +57,12 @@ export default function CameraScreen() {
 
       <View style={styles.overlay}>
         <View style={styles.topBar}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.closeButton}>Fermer</Text>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+          >
+            <Feather name="x" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
@@ -67,7 +74,12 @@ export default function CameraScreen() {
         </View>
 
         <View style={styles.controls}>
-          <TouchableOpacity style={styles.galleryButton} onPress={pickFromGallery}>
+          <TouchableOpacity
+            style={styles.galleryButton}
+            onPress={pickFromGallery}
+            activeOpacity={0.7}
+          >
+            <Feather name="image" size={18} color="#FFFFFF" style={styles.galleryIcon} />
             <Text style={styles.galleryButtonText}>Galerie</Text>
           </TouchableOpacity>
 
@@ -83,38 +95,110 @@ export default function CameraScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
-  permissionText: { fontSize: 16, textAlign: 'center', color: '#757575' },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xxl,
+    backgroundColor: colors.background,
+  },
+  permissionText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: colors.text.secondary,
+    marginTop: spacing.lg,
+    lineHeight: 24,
+  },
   permissionButton: {
-    marginTop: 16, backgroundColor: '#2196F3', paddingHorizontal: 24,
-    paddingVertical: 12, borderRadius: 8,
+    marginTop: spacing.xl,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.sm,
   },
-  permissionButtonText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
-  overlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'space-between' },
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end', padding: 16, paddingTop: 48 },
-  closeButton: { color: '#FFF', fontSize: 16, fontWeight: '600' },
-  guide: { alignItems: 'center' },
+  permissionButtonText: {
+    color: colors.text.inverse,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'space-between',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: spacing.lg,
+    paddingTop: 48,
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  guide: {
+    alignItems: 'center',
+  },
   guideFrame: {
-    width: 250, height: 250, borderWidth: 2, borderColor: 'rgba(255,255,255,0.6)',
-    borderRadius: 16,
+    width: 250,
+    height: 250,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.6)',
+    borderRadius: borderRadius.lg,
   },
-  guideText: { color: '#FFF', fontSize: 14, marginTop: 12, textAlign: 'center' },
+  guideText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 14,
+    marginTop: spacing.md,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
   controls: {
-    flexDirection: 'row', justifyContent: 'space-around',
-    alignItems: 'center', paddingBottom: 40, paddingHorizontal: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingBottom: 40,
+    paddingHorizontal: spacing.xl,
   },
   galleryButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 16,
-    paddingVertical: 10, borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 10,
+    borderRadius: borderRadius.xl,
   },
-  galleryButtonText: { color: '#FFF', fontSize: 14 },
+  galleryIcon: {
+    marginRight: spacing.sm,
+  },
+  galleryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
   captureButton: {
-    width: 72, height: 72, borderRadius: 36, borderWidth: 4,
-    borderColor: '#FFF', justifyContent: 'center', alignItems: 'center',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 4,
+    borderColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   captureButtonInner: {
-    width: 58, height: 58, borderRadius: 29, backgroundColor: '#FFF',
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: '#FFFFFF',
   },
-  placeholder: { width: 60 },
+  placeholder: {
+    width: 60,
+  },
 });

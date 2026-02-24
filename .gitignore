@@ -8,3 +8,25 @@ __pycache__
 *.pyo
 .pytest_cache
 .mypy_cache
+.jpg
+.png
+
+# Dataset - géré via Hugging Face
+ai_model/data/raw/
+ai_model/data/processed/
+ai_model/data/processed2/
+ai_model/data/splits/
+ai_model/saved_models/
+ai_model/models/exported/
+
+# Cache HF
+~/.cache/huggingface/
+
+# Training outputs (logs, checkpoints, TensorBoard)
+ai_model/outputs/
+
+# Claude session data
+.claude/
+
+# Windows artifacts
+nul

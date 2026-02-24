@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { createStaticNavigation, useNavigation } from '@react-navigation/native';
+import { createStaticNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Feather } from '@expo/vector-icons';
 
 import { useAuthStore } from '../store/authStore';
+import { colors } from '../theme';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import CameraScreen from '../screens/camera/CameraScreen';
@@ -22,32 +24,58 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 const HomeTabs = createBottomTabNavigator({
   screenOptions: {
     headerShown: false,
-    tabBarActiveTintColor: '#2196F3',
-    tabBarInactiveTintColor: '#999',
+    tabBarActiveTintColor: colors.primary,
+    tabBarInactiveTintColor: colors.text.tertiary,
     tabBarStyle: {
+      backgroundColor: colors.surface,
       borderTopWidth: 1,
-      borderTopColor: '#E0E0E0',
-      paddingTop: 8,
+      borderTopColor: colors.border,
+      paddingTop: 6,
       paddingBottom: 8,
       height: 60,
+    },
+    tabBarLabelStyle: {
+      fontSize: 11,
+      fontWeight: '500',
+      marginTop: 2,
     },
   },
   screens: {
     HomeTab: {
       screen: HomeScreen,
-      options: { tabBarLabel: 'Accueil' },
+      options: {
+        tabBarLabel: 'Accueil',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Feather name="home" size={size} color={color} />
+        ),
+      },
     },
     HistoryTab: {
       screen: HistoryScreen,
-      options: { tabBarLabel: 'Historique' },
+      options: {
+        tabBarLabel: 'Historique',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Feather name="clock" size={size} color={color} />
+        ),
+      },
     },
     DashboardTab: {
       screen: DashboardScreen,
-      options: { tabBarLabel: 'Dashboard' },
+      options: {
+        tabBarLabel: 'Dashboard',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Feather name="bar-chart-2" size={size} color={color} />
+        ),
+      },
     },
     SettingsTab: {
       screen: SettingsScreen,
-      options: { tabBarLabel: 'Parametres' },
+      options: {
+        tabBarLabel: 'Parametres',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Feather name="settings" size={size} color={color} />
+        ),
+      },
     },
   },
 });
@@ -76,7 +104,7 @@ const MainStack = createNativeStackNavigator({
 const AuthStack = createNativeStackNavigator({
   screenOptions: {
     headerShown: false,
-    contentStyle: { backgroundColor: '#FFFFFF' },
+    contentStyle: { backgroundColor: colors.background },
   },
   screens: {
     Login: {
@@ -126,8 +154,8 @@ export default function AppNavigator() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#2196F3" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }

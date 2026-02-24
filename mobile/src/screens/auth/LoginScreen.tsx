@@ -10,7 +10,9 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/authStore';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -36,8 +38,13 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>DermatoIA</Text>
-        <Text style={styles.subtitle}>Analyse dermatologique par IA</Text>
+        <View style={styles.headerContainer}>
+          <View style={styles.iconContainer}>
+            <Feather name="shield" size={40} color={colors.primary} />
+          </View>
+          <Text style={styles.title}>DermatoIA</Text>
+          <Text style={styles.subtitle}>Analyse dermatologique par IA</Text>
+        </View>
 
         {error && (
           <View style={styles.errorContainer}>
@@ -48,6 +55,7 @@ export default function LoginScreen() {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={colors.text.tertiary}
           value={email}
           onChangeText={(text) => { setEmail(text); clearError(); }}
           keyboardType="email-address"
@@ -57,6 +65,7 @@ export default function LoginScreen() {
         <TextInput
           style={styles.input}
           placeholder="Mot de passe"
+          placeholderTextColor={colors.text.tertiary}
           value={password}
           onChangeText={(text) => { setPassword(text); clearError(); }}
           secureTextEntry
@@ -66,6 +75,7 @@ export default function LoginScreen() {
           style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={isLoading}
+          activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>
             {isLoading ? 'Connexion...' : 'Se connecter'}
@@ -80,32 +90,109 @@ export default function LoginScreen() {
           <Text style={styles.link}>Pas encore de compte ? S'inscrire</Text>
         </TouchableOpacity>
 
-        <Text style={styles.disclaimer}>
-          Cette application ne remplace pas un avis medical professionnel.
-          En cas d'urgence, contactez le 15 ou rendez-vous aux urgences.
-        </Text>
+        <View style={styles.disclaimerContainer}>
+          <Text style={styles.disclaimer}>
+            Cette application ne remplace pas un avis medical professionnel.
+            En cas d'urgence, contactez le 15 ou rendez-vous aux urgences.
+          </Text>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 32 },
-  title: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', color: '#2196F3', marginBottom: 8 },
-  subtitle: { fontSize: 16, textAlign: 'center', color: '#757575', marginBottom: 40 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing['3xl'],
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: spacing['4xl'],
+  },
+  iconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: colors.primaryDark,
+    letterSpacing: -1,
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: colors.text.secondary,
+  },
   input: {
-    borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 12, padding: 16,
-    fontSize: 16, marginBottom: 16, backgroundColor: '#F5F5F5',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    fontSize: 16,
+    marginBottom: spacing.lg,
+    backgroundColor: colors.surface,
+    color: colors.text.primary,
+    ...shadows.sm,
   },
   button: {
-    backgroundColor: '#2196F3', borderRadius: 12, padding: 16,
-    alignItems: 'center', marginBottom: 16,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    ...shadows.md,
   },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
-  link: { textAlign: 'center', color: '#2196F3', fontSize: 14, marginBottom: 12 },
-  errorContainer: { backgroundColor: '#FFEBEE', padding: 12, borderRadius: 8, marginBottom: 16 },
-  errorText: { color: '#D32F2F', textAlign: 'center' },
-  disclaimer: { textAlign: 'center', color: '#9E9E9E', fontSize: 11, marginTop: 24, lineHeight: 16 },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: colors.text.inverse,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  link: {
+    textAlign: 'center',
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: spacing.md,
+  },
+  errorContainer: {
+    backgroundColor: colors.errorBg,
+    padding: spacing.md,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.lg,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error,
+  },
+  errorText: {
+    color: colors.error,
+    fontSize: 14,
+  },
+  disclaimerContainer: {
+    backgroundColor: colors.borderLight,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    marginTop: spacing.xl,
+  },
+  disclaimer: {
+    textAlign: 'center',
+    color: colors.text.tertiary,
+    fontSize: 11,
+    lineHeight: 16,
+  },
 });

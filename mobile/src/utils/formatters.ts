@@ -1,4 +1,5 @@
 import { SeverityLevel } from '../types';
+import { colors } from '../theme';
 
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -18,15 +19,30 @@ export function formatConfidence(confidence: number): string {
 export function getSeverityColor(severity: SeverityLevel): string {
   switch (severity) {
     case 'critical':
-      return '#D32F2F';
+      return colors.severity.critical;
     case 'high':
-      return '#F57C00';
+      return colors.severity.high;
     case 'medium':
-      return '#FFA000';
+      return colors.severity.medium;
     case 'low':
-      return '#388E3C';
+      return colors.severity.low;
     default:
-      return '#757575';
+      return colors.text.tertiary;
+  }
+}
+
+export function getSeverityBgColor(severity: SeverityLevel): string {
+  switch (severity) {
+    case 'critical':
+      return colors.severityBg.critical;
+    case 'high':
+      return colors.severityBg.high;
+    case 'medium':
+      return colors.severityBg.medium;
+    case 'low':
+      return colors.severityBg.low;
+    default:
+      return colors.borderLight;
   }
 }
 
@@ -47,6 +63,13 @@ export function getSeverityLabel(severity: SeverityLevel): string {
 
 export function formatLesionType(type: string): string {
   const labels: Record<string, string> = {
+    akiec: 'Keratose actinique',
+    bcc: 'Carcinome basocellulaire',
+    bkl: 'Keratose benigne',
+    df: 'Dermatofibrome',
+    mel: 'Melanome',
+    nv: 'Naevus',
+    vasc: 'Lesion vasculaire',
     melanoma: 'Melanome',
     eczema: 'Eczema',
     psoriasis: 'Psoriasis',

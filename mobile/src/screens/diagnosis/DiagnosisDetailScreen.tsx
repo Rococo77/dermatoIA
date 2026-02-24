@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { formatDate, formatConfidence, getSeverityColor, getSeverityLabel, formatLesionType } from '../../utils/formatters';
+import { Feather } from '@expo/vector-icons';
+import { formatDate, formatConfidence, getSeverityColor, getSeverityBgColor, getSeverityLabel, formatLesionType } from '../../utils/formatters';
 import { Diagnosis } from '../../types';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function DiagnosisDetailScreen() {
   const navigation = useNavigation<any>();
@@ -10,15 +12,16 @@ export default function DiagnosisDetailScreen() {
   const diagnosis: Diagnosis = route.params.diagnosis;
 
   const severityColor = getSeverityColor(diagnosis.severity_level);
+  const severityBgColor = getSeverityBgColor(diagnosis.severity_level);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>Retour</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Feather name="arrow-left" size={24} color={colors.primary} />
         </TouchableOpacity>
         <Text style={styles.topTitle}>Detail du diagnostic</Text>
-        <View style={{ width: 50 }} />
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -30,7 +33,7 @@ export default function DiagnosisDetailScreen() {
           <Text style={styles.confidence}>Confiance : {formatConfidence(diagnosis.lesion_type_confidence)}</Text>
         </View>
 
-        <View style={[styles.card, { borderLeftWidth: 4, borderLeftColor: severityColor }]}>
+        <View style={[styles.card, styles.severityCard, { backgroundColor: severityBgColor, borderLeftColor: severityColor }]}>
           <Text style={styles.label}>Gravite</Text>
           <Text style={[styles.value, { color: severityColor }]}>
             {getSeverityLabel(diagnosis.severity_level)}
@@ -45,6 +48,7 @@ export default function DiagnosisDetailScreen() {
 
         {diagnosis.requires_hospital && (
           <View style={styles.hospitalBadge}>
+            <Feather name="alert-circle" size={18} color={colors.error} />
             <Text style={styles.hospitalText}>Consultation medicale recommandee</Text>
           </View>
         )}
@@ -58,26 +62,87 @@ export default function DiagnosisDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   topBar: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 16, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#E0E0E0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.lg,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  backButton: { color: '#2196F3', fontSize: 16 },
-  topTitle: { fontSize: 18, fontWeight: '600' },
-  content: { padding: 24 },
-  date: { fontSize: 14, color: '#757575', marginBottom: 16 },
+  backButton: {
+    padding: spacing.xs,
+  },
+  topTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  content: {
+    padding: spacing['2xl'],
+  },
+  date: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+    marginBottom: spacing.lg,
+  },
   card: {
-    backgroundColor: '#FFF', borderRadius: 12, padding: 20, marginBottom: 12,
-    elevation: 1,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.xl,
+    marginBottom: spacing.md,
+    ...shadows.sm,
   },
-  label: { fontSize: 12, fontWeight: '600', color: '#9E9E9E', textTransform: 'uppercase', marginBottom: 6 },
-  value: { fontSize: 20, fontWeight: 'bold', color: '#212121' },
-  confidence: { fontSize: 13, color: '#757575', marginTop: 4 },
-  recommendation: { fontSize: 15, color: '#424242', lineHeight: 22 },
+  severityCard: {
+    borderLeftWidth: 4,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: spacing.sm,
+  },
+  value: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text.primary,
+  },
+  confidence: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    marginTop: spacing.xs,
+  },
+  recommendation: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    lineHeight: 22,
+  },
   hospitalBadge: {
-    backgroundColor: '#FFEBEE', borderRadius: 8, padding: 12, alignItems: 'center', marginBottom: 12,
+    backgroundColor: colors.errorBg,
+    borderRadius: borderRadius.sm,
+    padding: spacing.md,
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
-  hospitalText: { color: '#D32F2F', fontWeight: '600' },
-  modelVersion: { textAlign: 'center', color: '#BDBDBD', fontSize: 12, marginTop: 16 },
+  hospitalText: {
+    color: colors.error,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  modelVersion: {
+    textAlign: 'center',
+    color: colors.text.muted,
+    fontSize: 12,
+    marginTop: spacing.lg,
+  },
 });

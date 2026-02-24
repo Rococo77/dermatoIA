@@ -27,6 +27,8 @@ class Trainer:
         config: dict,
         device: torch.device = None,
         output_dir: str = "outputs",
+        type_weights: Optional[torch.Tensor] = None,
+        severity_weights: Optional[torch.Tensor] = None,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -40,10 +42,13 @@ class Trainer:
 
         self.metrics_calculator = MetricsCalculator(lesion_types, severity_levels)
 
-        # Loss function
+        # Loss function with optional class weights for imbalanced data
         self.criterion = HierarchicalLoss(
             alpha=config["training"]["loss_alpha"],
             beta=config["training"]["loss_beta"],
+            type_weights=type_weights.to(self.device) if type_weights is not None else None,
+            severity_weights=severity_weights.to(self.device) if severity_weights is not None else None,
+            label_smoothing=config["training"].get("label_smoothing", 0.0),
         )
 
         # Tensorboard
@@ -60,6 +65,17 @@ class Trainer:
         )
 
     def _create_scheduler(self, optimizer, epochs: int):
+        warmup_epochs = self.config["training"].get("warmup_epochs", 3)
+        if warmup_epochs > 0 and epochs > warmup_epochs:
+            warmup = torch.optim.lr_scheduler.LinearLR(
+                optimizer, start_factor=0.1, total_iters=warmup_epochs
+            )
+            cosine = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer, T_max=epochs - warmup_epochs
+            )
+            return torch.optim.lr_scheduler.SequentialLR(
+                optimizer, schedulers=[warmup, cosine], milestones=[warmup_epochs]
+            )
         return torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
     def train_epoch(self, optimizer) -> Dict:
@@ -72,16 +88,19 @@ class Trainer:
         all_severity_targets = []
 
         pbar = tqdm(self.train_loader, desc="Training")
-        for images, type_labels, severity_labels in pbar:
+        for images, type_labels, severity_labels, metadata in pbar:
             images = images.to(self.device)
             type_labels = type_labels.to(self.device)
             severity_labels = severity_labels.to(self.device)
+            metadata = metadata.to(self.device)
 
             optimizer.zero_grad()
-            type_logits, severity_logits = self.model(images)
+            type_logits, severity_logits = self.model(images, metadata)
 
             losses = self.criterion(type_logits, severity_logits, type_labels, severity_labels)
             losses["total_loss"].backward()
+            max_norm = self.config["training"].get("grad_clip_norm", 1.0)
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=max_norm)
             optimizer.step()
 
             loss_meter.update(losses["total_loss"].item(), images.size(0))
@@ -114,12 +133,13 @@ class Trainer:
         all_type_probs = []
         all_severity_probs = []
 
-        for images, type_labels, severity_labels in tqdm(self.val_loader, desc="Validation"):
+        for images, type_labels, severity_labels, metadata in tqdm(self.val_loader, desc="Validation"):
             images = images.to(self.device)
             type_labels = type_labels.to(self.device)
             severity_labels = severity_labels.to(self.device)
+            metadata = metadata.to(self.device)
 
-            type_logits, severity_logits = self.model(images)
+            type_logits, severity_logits = self.model(images, metadata)
 
             losses = self.criterion(type_logits, severity_logits, type_labels, severity_labels)
             loss_meter.update(losses["total_loss"].item(), images.size(0))

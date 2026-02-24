@@ -60,6 +60,20 @@ class MetricsCalculator:
             severity_targets, severity_preds, labels=list(range(len(self.severity_levels)))
         )
 
+        # Per-class F1 scores for detailed analysis on imbalanced data
+        per_class_f1 = f1_score(type_targets, type_preds, average=None, zero_division=0,
+                                labels=list(range(len(self.lesion_types))))
+        for i, name in enumerate(self.lesion_types):
+            if i < len(per_class_f1):
+                metrics[f"type_f1_{name}"] = per_class_f1[i]
+
+        # Melanoma sensitivity (critical clinical metric)
+        mel_idx = self.lesion_types.index("mel") if "mel" in self.lesion_types else None
+        if mel_idx is not None:
+            mel_mask = type_targets == mel_idx
+            if mel_mask.sum() > 0:
+                metrics["melanoma_sensitivity"] = float((type_preds[mel_mask] == mel_idx).mean())
+
         return metrics
 
 

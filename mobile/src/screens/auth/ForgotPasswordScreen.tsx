@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 import { authApi } from '../../api/auth';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation<any>();
@@ -29,12 +38,21 @@ export default function ForgotPasswordScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.title}>Email envoye</Text>
+          <View style={styles.headerContainer}>
+            <View style={styles.successIconContainer}>
+              <Feather name="check-circle" size={40} color={colors.success} />
+            </View>
+            <Text style={styles.title}>Email envoye</Text>
+          </View>
           <Text style={styles.message}>
             Si un compte existe avec cette adresse, vous recevrez un email avec les instructions
             de reinitialisation.
           </Text>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Login')}
+            activeOpacity={0.8}
+          >
             <Text style={styles.buttonText}>Retour a la connexion</Text>
           </TouchableOpacity>
         </View>
@@ -45,7 +63,12 @@ export default function ForgotPasswordScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Mot de passe oublie</Text>
+        <View style={styles.headerContainer}>
+          <View style={styles.iconContainer}>
+            <Feather name="mail" size={36} color={colors.primary} />
+          </View>
+          <Text style={styles.title}>Mot de passe oublie</Text>
+        </View>
         <Text style={styles.message}>
           Entrez votre adresse email pour recevoir un lien de reinitialisation.
         </Text>
@@ -53,6 +76,7 @@ export default function ForgotPasswordScreen() {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={colors.text.tertiary}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -63,6 +87,7 @@ export default function ForgotPasswordScreen() {
           style={[styles.button, isLoading && styles.buttonDisabled]}
           onPress={handleReset}
           disabled={isLoading}
+          activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>
             {isLoading ? 'Envoi...' : 'Envoyer'}
@@ -78,16 +103,82 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 32 },
-  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 },
-  message: { fontSize: 15, textAlign: 'center', color: '#757575', marginBottom: 32, lineHeight: 22 },
-  input: {
-    borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 12, padding: 16,
-    fontSize: 16, marginBottom: 16, backgroundColor: '#F5F5F5',
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
-  button: { backgroundColor: '#2196F3', borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 16 },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600' },
-  link: { textAlign: 'center', color: '#2196F3', fontSize: 14 },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing['3xl'],
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  iconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  successIconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.successBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: colors.text.primary,
+    letterSpacing: -0.5,
+  },
+  message: {
+    fontSize: 15,
+    textAlign: 'center',
+    color: colors.text.secondary,
+    marginBottom: spacing['3xl'],
+    lineHeight: 22,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    fontSize: 16,
+    marginBottom: spacing.lg,
+    backgroundColor: colors.surface,
+    color: colors.text.primary,
+    ...shadows.sm,
+  },
+  button: {
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    ...shadows.md,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: colors.text.inverse,
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  link: {
+    textAlign: 'center',
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
 });

@@ -1,27 +1,31 @@
-# DermatoIA - Configuration d'entrainement
+# DermatoIA - Configuration d'entrainement (HAM10000)
 
 data:
+  dataset_mode: "folder"              # "csv" (HAM10000 avec metadata) ou "folder" (images par dossiers)
+  folder_dir: "data/processed2"    # Chemin du dataset par dossiers (si dataset_mode: "folder")
   raw_dir: "data/raw"
   processed_dir: "data/processed"
   splits_dir: "data/splits"
+  metadata_csv: "data/raw/HAM10000_metadata.csv"
+  images_dir: "data/raw/images"
   image_size: 224
   train_ratio: 0.7
   val_ratio: 0.15
   test_ratio: 0.15
 
 model:
-  backbone: "efficientnet_b4"
-  pretrained: true
-  feature_dim: 1792
+  backbone: "custom_cnn"      # timm: efficientnet_b2/b4, convnext_tiny, swin_tiny_patch4_window7_224, resnet50 | custom: custom_cnn
+  pretrained: false                 # false pour custom_cnn (pas de poids pretrained)
   type_embedding_dim: 64
   type_hidden_dim: 512
   severity_hidden_dim: 256
+  metadata_fusion_dim: 64
   dropout: 0.3
   num_severity_levels: 4
 
 training:
   phase1:
-    epochs: 10
+    epochs: 0
     lr: 0.001
     freeze_backbone: true
   phase2:
@@ -36,23 +40,58 @@ training:
   early_stopping_patience: 7
   loss_alpha: 1.0
   loss_beta: 1.0
+  use_class_weights: true
+  class_weight_method: "inverse_frequency"
+  grad_clip_norm: 1.0
+  label_smoothing: 0.1
+  warmup_epochs: 3
 
 export:
   format: "torchscript"
   output_dir: "models/exported"
 
 lesion_types:
-  - melanoma
-  - eczema
-  - psoriasis
-  - acne
-  - dermatitis
-  - keratosis
-  - nevus
-  - other
+  - akiec   # Keratose actinique / Maladie de Bowen
+  - bcc     # Carcinome basocellulaire
+  - bkl     # Keratose benigne
+  - df      # Dermatofibrome
+  - mel     # Melanome
+  - nv      # Naevus melanocytaire
+  - vasc    # Lesions vasculaires
 
 severity_levels:
   - low
   - medium
   - high
   - critical
+
+severity_mapping:
+  akiec: high
+  bcc: high
+  bkl: low
+  df: low
+  mel: critical
+  nv: low
+  vasc: medium
+
+metadata:
+  use_metadata: true
+  sex_categories:
+    - male
+    - female
+    - unknown
+  localization_categories:
+    - abdomen
+    - back
+    - chest
+    - ear
+    - face
+    - foot
+    - genital
+    - hand
+    - lower extremity
+    - neck
+    - scalp
+    - trunk
+    - upper extremity
+    - unknown

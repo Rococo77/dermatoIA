@@ -11,12 +11,20 @@ def export_to_torchscript(
     model: HierarchicalDermaModel,
     output_path: str,
     image_size: int = 224,
+    use_metadata: bool = False,
+    metadata_feature_dim: int = 18,
 ):
     """Export trained model to TorchScript format for serving."""
     model.eval()
     model.cpu()
 
-    dummy_input = torch.randn(1, 3, image_size, image_size)
+    dummy_image = torch.randn(1, 3, image_size, image_size)
+
+    if use_metadata:
+        dummy_metadata = torch.zeros(1, metadata_feature_dim)
+        dummy_input = (dummy_image, dummy_metadata)
+    else:
+        dummy_input = (dummy_image,)
 
     try:
         scripted_model = torch.jit.trace(model, dummy_input)
@@ -29,7 +37,7 @@ def export_to_torchscript(
 
         # Verify
         loaded = torch.jit.load(output_path)
-        test_output = loaded(dummy_input)
+        test_output = loaded(*dummy_input)
         logger.info(f"Verification: type_logits shape={test_output[0].shape}, severity_logits shape={test_output[1].shape}")
 
     except Exception as e:

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, TextInput,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/authStore';
 import { userApi } from '../../api/user';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function SettingsScreen() {
   const { user, logout, loadUser } = useAuthStore();
@@ -73,12 +75,18 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Profil</Text>
 
           <View style={styles.field}>
-            <Text style={styles.fieldLabel}>Email</Text>
+            <View style={styles.fieldLabelRow}>
+              <Feather name="user" size={16} color={colors.text.tertiary} />
+              <Text style={styles.fieldLabel}>Email</Text>
+            </View>
             <Text style={styles.fieldValue}>{user?.email}</Text>
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.fieldLabel}>Nom</Text>
+            <View style={styles.fieldLabelRow}>
+              <Feather name="user" size={16} color={colors.text.tertiary} />
+              <Text style={styles.fieldLabel}>Nom</Text>
+            </View>
             {isEditingName ? (
               <View style={styles.editRow}>
                 <TextInput
@@ -99,13 +107,17 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Securite</Text>
+          <View style={styles.sectionTitleRow}>
+            <Feather name="lock" size={16} color={colors.text.tertiary} />
+            <Text style={styles.sectionTitle}>Securite</Text>
+          </View>
 
           {showPasswordForm ? (
             <View>
               <TextInput
                 style={styles.input}
                 placeholder="Mot de passe actuel"
+                placeholderTextColor={colors.text.tertiary}
                 secureTextEntry
                 value={currentPassword}
                 onChangeText={setCurrentPassword}
@@ -113,6 +125,7 @@ export default function SettingsScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Nouveau mot de passe"
+                placeholderTextColor={colors.text.tertiary}
                 secureTextEntry
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -130,11 +143,14 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+            <Feather name="log-out" size={18} color={colors.text.primary} />
             <Text style={styles.logoutButtonText}>Se deconnecter</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.dangerSection}>
+          <Feather name="trash-2" size={18} color={colors.error} style={styles.dangerIcon} />
+          <Text style={styles.dangerTitle}>Zone dangereuse</Text>
           <TouchableOpacity onPress={handleDeleteAccount}>
             <Text style={styles.dangerLink}>Supprimer mon compte</Text>
           </TouchableOpacity>
@@ -145,36 +161,138 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
-  header: { padding: 24, paddingBottom: 12 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#212121' },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    padding: spacing['2xl'],
+    paddingBottom: spacing.md,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    color: colors.text.primary,
+  },
   section: {
-    backgroundColor: '#FFF', marginHorizontal: 16, marginBottom: 16,
-    borderRadius: 12, padding: 20, elevation: 1,
+    backgroundColor: colors.surface,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.md,
+    padding: spacing.xl,
+    ...shadows.sm,
   },
-  sectionTitle: { fontSize: 14, fontWeight: '600', color: '#9E9E9E', textTransform: 'uppercase', marginBottom: 16 },
-  field: { marginBottom: 16 },
-  fieldLabel: { fontSize: 12, color: '#9E9E9E', marginBottom: 4 },
-  fieldValue: { fontSize: 16, color: '#212121' },
-  editRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  field: {
+    marginBottom: spacing.lg,
+  },
+  fieldLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  fieldLabel: {
+    fontSize: 12,
+    color: colors.text.tertiary,
+  },
+  fieldValue: {
+    fontSize: 16,
+    color: colors.text.primary,
+  },
+  editRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   editInput: {
-    flex: 1, borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 8,
-    padding: 8, fontSize: 16,
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.background,
+    padding: spacing.sm,
+    fontSize: 16,
+    color: colors.text.primary,
   },
-  saveLink: { color: '#2196F3', fontWeight: '600' },
+  saveLink: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
   input: {
-    borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 8, padding: 12,
-    fontSize: 16, marginBottom: 12, backgroundColor: '#F5F5F5',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.background,
+    padding: spacing.md,
+    fontSize: 16,
+    marginBottom: spacing.md,
+    color: colors.text.primary,
   },
-  link: { color: '#2196F3', fontSize: 16 },
+  link: {
+    color: colors.primary,
+    fontSize: 16,
+  },
   actionButton: {
-    backgroundColor: '#2196F3', borderRadius: 8, padding: 12, alignItems: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.sm,
+    padding: spacing.md,
+    alignItems: 'center',
   },
-  actionButtonText: { color: '#FFF', fontWeight: '600' },
+  actionButtonText: {
+    color: colors.text.inverse,
+    fontWeight: '600',
+    fontSize: 15,
+  },
   logoutButton: {
-    backgroundColor: '#F5F5F5', borderRadius: 8, padding: 14, alignItems: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: 'transparent',
+    borderRadius: borderRadius.sm,
+    padding: 14,
+    gap: spacing.sm,
   },
-  logoutButtonText: { color: '#424242', fontSize: 16, fontWeight: '600' },
-  dangerSection: { alignItems: 'center', padding: 24 },
-  dangerLink: { color: '#D32F2F', fontSize: 14 },
+  logoutButtonText: {
+    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  dangerSection: {
+    backgroundColor: colors.errorBg,
+    borderRadius: borderRadius.md,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing['2xl'],
+    padding: spacing.lg,
+    alignItems: 'center',
+  },
+  dangerIcon: {
+    marginBottom: spacing.sm,
+  },
+  dangerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.error,
+    marginBottom: spacing.md,
+  },
+  dangerLink: {
+    color: colors.error,
+    fontSize: 14,
+    fontWeight: '500',
+  },
 });

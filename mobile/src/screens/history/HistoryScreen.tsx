@@ -3,9 +3,11 @@ import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, Alert,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 import { useDiagnosisStore } from '../../store/diagnosisStore';
 import { formatDate, getSeverityColor, getSeverityLabel, formatLesionType } from '../../utils/formatters';
 import { Diagnosis } from '../../types';
+import { colors, spacing, borderRadius, shadows } from '../../theme';
 
 export default function HistoryScreen() {
   const navigation = useNavigation<any>();
@@ -40,21 +42,28 @@ export default function HistoryScreen() {
         style={styles.card}
         onPress={() => navigation.navigate('DiagnosisDetail', { diagnosis: item })}
         onLongPress={() => handleDelete(item.id)}
+        activeOpacity={0.7}
       >
-        <View style={[styles.severityIndicator, { backgroundColor: severityColor }]} />
         <View style={styles.cardContent}>
-          <Text style={styles.lesionType}>{formatLesionType(item.lesion_type)}</Text>
-          <View style={styles.cardRow}>
-            <Text style={[styles.severity, { color: severityColor }]}>
-              {getSeverityLabel(item.severity_level)}
-            </Text>
-            {item.requires_hospital && (
-              <View style={styles.hospitalBadge}>
-                <Text style={styles.hospitalBadgeText}>Consultation</Text>
+          <View style={styles.cardTop}>
+            <View style={[styles.severityDot, { backgroundColor: severityColor }]} />
+            <View style={styles.cardInfo}>
+              <Text style={styles.lesionType}>{formatLesionType(item.lesion_type)}</Text>
+              <View style={styles.cardRow}>
+                <Text style={[styles.severity, { color: severityColor }]}>
+                  {getSeverityLabel(item.severity_level)}
+                </Text>
+                {item.requires_hospital && (
+                  <View style={styles.hospitalBadge}>
+                    <Feather name="alert-circle" size={12} color={colors.error} />
+                    <Text style={styles.hospitalBadgeText}>Consultation</Text>
+                  </View>
+                )}
               </View>
-            )}
+              <Text style={styles.date}>{formatDate(item.created_at)}</Text>
+            </View>
           </View>
-          <Text style={styles.date}>{formatDate(item.created_at)}</Text>
+          <Feather name="chevron-right" size={18} color={colors.text.muted} />
         </View>
       </TouchableOpacity>
     );
@@ -82,6 +91,7 @@ export default function HistoryScreen() {
         onEndReachedThreshold={0.5}
         ListEmptyComponent={
           <View style={styles.empty}>
+            <Feather name="clipboard" size={48} color={colors.text.muted} />
             <Text style={styles.emptyText}>Aucun diagnostic pour le moment</Text>
             <Text style={styles.emptySubtext}>Prenez une photo pour commencer</Text>
           </View>
@@ -92,24 +102,101 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
-  header: { padding: 24, paddingBottom: 12 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#212121' },
-  count: { fontSize: 14, color: '#757575', marginTop: 4 },
-  list: { padding: 16 },
-  card: {
-    flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 12,
-    marginBottom: 12, overflow: 'hidden', elevation: 1,
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
-  severityIndicator: { width: 4 },
-  cardContent: { flex: 1, padding: 16 },
-  lesionType: { fontSize: 17, fontWeight: '600', color: '#212121' },
-  cardRow: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 },
-  severity: { fontSize: 14, fontWeight: '500' },
-  hospitalBadge: { backgroundColor: '#FFEBEE', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
-  hospitalBadgeText: { color: '#D32F2F', fontSize: 11, fontWeight: '600' },
-  date: { fontSize: 12, color: '#9E9E9E', marginTop: 8 },
-  empty: { alignItems: 'center', paddingTop: 64 },
-  emptyText: { fontSize: 18, color: '#757575', fontWeight: '500' },
-  emptySubtext: { fontSize: 14, color: '#BDBDBD', marginTop: 8 },
+  header: {
+    padding: spacing['2xl'],
+    paddingBottom: spacing.md,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    color: colors.text.primary,
+  },
+  count: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+    marginTop: spacing.xs,
+  },
+  list: {
+    padding: spacing.lg,
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.md,
+    ...shadows.sm,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  cardTop: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  severityDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    marginRight: spacing.md,
+  },
+  cardInfo: {
+    flex: 1,
+  },
+  lesionType: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  severity: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  hospitalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.errorBg,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    gap: 4,
+  },
+  hospitalBadgeText: {
+    color: colors.error,
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  date: {
+    fontSize: 12,
+    color: colors.text.tertiary,
+    marginTop: spacing.sm,
+  },
+  empty: {
+    alignItems: 'center',
+    paddingTop: 64,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: colors.text.secondary,
+    fontWeight: '500',
+    marginTop: spacing.lg,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: colors.text.tertiary,
+    marginTop: spacing.sm,
+  },
 });

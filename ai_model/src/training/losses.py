@@ -16,12 +16,13 @@ class HierarchicalLoss(nn.Module):
         beta: float = 1.0,
         type_weights: Optional[torch.Tensor] = None,
         severity_weights: Optional[torch.Tensor] = None,
+        label_smoothing: float = 0.0,
     ):
         super().__init__()
         self.alpha = alpha
         self.beta = beta
-        self.type_loss_fn = nn.CrossEntropyLoss(weight=type_weights)
-        self.severity_loss_fn = nn.CrossEntropyLoss(weight=severity_weights)
+        self.type_loss_fn = nn.CrossEntropyLoss(weight=type_weights, label_smoothing=label_smoothing)
+        self.severity_loss_fn = nn.CrossEntropyLoss(weight=severity_weights, label_smoothing=label_smoothing)
 
     def forward(
         self,

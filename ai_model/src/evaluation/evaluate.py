@@ -34,10 +34,11 @@ def evaluate_model(
     all_severity_probs = []
 
     with torch.no_grad():
-        for images, type_labels, severity_labels in tqdm(test_loader, desc="Evaluation"):
+        for images, type_labels, severity_labels, metadata in tqdm(test_loader, desc="Evaluation"):
             images = images.to(device)
+            metadata = metadata.to(device)
 
-            type_logits, severity_logits = model(images)
+            type_logits, severity_logits = model(images, metadata)
 
             type_probs = torch.softmax(type_logits, dim=1)
             severity_probs = torch.softmax(severity_logits, dim=1)
@@ -59,11 +60,13 @@ def evaluate_model(
     )
 
     print("\n=== Resultats d'evaluation ===")
-    print(f"Type Accuracy:     {metrics['type_accuracy']:.4f}")
-    print(f"Type F1 (weighted): {metrics['type_f1_weighted']:.4f}")
-    print(f"Type AUC:          {metrics.get('type_auc', 'N/A')}")
-    print(f"Severity Accuracy:  {metrics['severity_accuracy']:.4f}")
-    print(f"Severity F1:        {metrics['severity_f1_weighted']:.4f}")
-    print(f"Severity AUC:       {metrics.get('severity_auc', 'N/A')}")
+    print(f"Type Accuracy:      {metrics['type_accuracy']:.4f}")
+    print(f"Type F1 (weighted):  {metrics['type_f1_weighted']:.4f}")
+    print(f"Type F1 (macro):     {metrics['type_f1_macro']:.4f}")
+    print(f"Type AUC:            {metrics.get('type_auc', 'N/A')}")
+    print(f"Melanoma Sensitivity:{metrics.get('melanoma_sensitivity', 'N/A')}")
+    print(f"Severity Accuracy:   {metrics['severity_accuracy']:.4f}")
+    print(f"Severity F1:         {metrics['severity_f1_weighted']:.4f}")
+    print(f"Severity AUC:        {metrics.get('severity_auc', 'N/A')}")
 
     return metrics
